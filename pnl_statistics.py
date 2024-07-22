@@ -28,13 +28,8 @@ df_gbp['cumulative_pnl_bps'] = df_gbp['pnl_bps'].cumsum()
 df_usd['cumulative_pnl_bps'] = df_usd['pnl_bps'].cumsum()
 
 # Plotting
-<<<<<<< HEAD
-with PdfPages('pnl_stats.pdf') as pdf:
-    # Combined cumulative PnL
-=======
 with PdfPages('cumulative_pnl_bps.pdf') as pdf:
     # Combined cumulative PnL in basis points
->>>>>>> e30c136e44f467f7664df01b8947c2ff6c5ab62d
     plt.figure(figsize=(10, 6))
     plt.plot(df['close_date'], df['cumulative_pnl_bps'], label='Combined')
     plt.title('Cumulative PnL in Basis Points - Combined')
