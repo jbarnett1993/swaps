@@ -4,7 +4,8 @@ from rateslib import *
 from tia.bbg import LocalTerminal
 from dateutil.relativedelta import relativedelta
 
-sids = {'eur': 514, 'usd': 490, 'gbp': 141, 'chf': 234, 'sek': 185, 'nok': 487}
+sids = {'eur': 514, 'gbp':141,'usd':490}
+# sids = {'eur': 514, 'usd': 490, 'gbp': 141, 'chf': 234, 'sek': 185, 'nok': 487}
 all_tenors = list(range(1, 31))
 
 class SwapCreator():
@@ -152,10 +153,12 @@ def rebalance_swaps(start_date, end_date):
 
     return all_positions
 
-start_date = dt.today() - relativedelta(years=5)
+start_date = dt.today() - relativedelta(years=15)
 end_date = dt.today()
 positions = rebalance_swaps(start_date, end_date)
 
 # Convert positions to DataFrame and save to CSV
 positions_df = pd.DataFrame(positions)
-positions_df.to_csv('multi_currency_swap_strat_pnl.csv', index=False)
+positions_df.to_csv('eur_gbp_usd_swaps_strat', index=False)
+
+
