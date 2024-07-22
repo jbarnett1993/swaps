@@ -23,7 +23,7 @@ df_gbp['cumulative_pnl'] = df_gbp['pnl'].cumsum()
 df_usd['cumulative_pnl'] = df_usd['pnl'].cumsum()
 
 # Plotting
-with PdfPages('cumulative_pnl.pdf') as pdf:
+with PdfPages('pnl_stats.pdf') as pdf:
     # Combined cumulative PnL
     plt.figure(figsize=(10, 6))
     plt.plot(df['close_date'], df['cumulative_pnl'], label='Combined')
