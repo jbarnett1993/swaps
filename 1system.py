@@ -156,10 +156,10 @@ def rebalance_swaps(start_date, end_date):
 
     return all_positions
 
-start_date = dt.today() - relativedelta(years=15)
+start_date = dt.today() - relativedelta(years=4)
 end_date = dt.today()
 positions = rebalance_swaps(start_date, end_date)
 
 # Convert positions to DataFrame and save to CSV
 positions_df = pd.DataFrame(positions)
-positions_df.to_csv('master_txs.csv', index=False)
+positions_df.to_csv('last4years_txs.csv', index=False)
