@@ -100,3 +100,4 @@ with PdfPages('master_pnl_stats.pdf') as pdf:
     plt.grid(True)
     pdf.savefig()
     plt.close()
+    
