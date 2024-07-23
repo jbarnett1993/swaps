@@ -24,22 +24,32 @@ def get_eom_dates(start_date, end_date, calendar):
         current_date = eom_date
     return dates
 
-dates = get_eom_dates(dt.today() - relativedelta(years=1), dt.today(), 'bus')
+dates = get_eom_dates(dt.datetime.today() - relativedelta(years=1), dt.datetime.today(), 'bus')
+
+# Function to batch requests
+def batch_requests(curves, dates, batch_size=10):
+    for i in range(0, len(curves), batch_size):
+        for j in range(0, len(dates), batch_size):
+            curve_batch = curves[i:i + batch_size]
+            date_batch = dates[j:j + batch_size]
+            for curve in curve_batch:
+                for date in date_batch:
+                    yield curve, date
 
 # Create a dictionary to store the data
 data = {}
 
-for curve in curves:
-    for date in dates:
-        curve_id = curve
-        resp = LocalTerminal.get_reference_data(curve_id, 'CURVE_TENOR_RATES', CURVE_DATE=date.strftime('%Y%m%d'))
-        df = resp.as_frame()
-        tenors = df['CURVE_TENOR_RATES'].iloc[0]['Tenor'].to_list()
-        rates = df['CURVE_TENOR_RATES'].iloc[0]['Mid Yield'].to_list()
-        df = pd.DataFrame({'Term': tenors, 'Rate': rates})
-        print(df)
-        # Store the data in the dictionary with keys as (curve, date)
-        data[(curve, date)] = df
+# Batch the requests
+for curve, date in batch_requests(curves, dates, batch_size=5):
+    curve_id = curve
+    resp = LocalTerminal.get_reference_data(curve_id, 'CURVE_TENOR_RATES', CURVE_DATE=date.strftime('%Y%m%d'))
+    df = resp.as_frame()
+    tenors = df['CURVE_TENOR_RATES'].iloc[0]['Tenor'].to_list()
+    rates = df['CURVE_TENOR_RATES'].iloc[0]['Mid Yield'].to_list()
+    df = pd.DataFrame({'Term': tenors, 'Rate': rates})
+    print(df)
+    # Store the data in the dictionary with keys as (curve, date)
+    data[(curve, date)] = df
 
 # Convert the dictionary to a multi-index DataFrame for better usability
 multi_index_df = pd.concat(data.values(), keys=data.keys())
