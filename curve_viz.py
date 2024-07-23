@@ -1,6 +1,5 @@
 import pandas as pd
 import datetime as dt
-from pandas.core.arrays.datetimelike import DatelikeOps
 from rateslib import *
 from tia.bbg import LocalTerminal
 from dateutil.relativedelta import relativedelta
@@ -25,7 +24,7 @@ def get_eom_dates(start_date, end_date, calendar):
         current_date = eom_date
     return dates
 
-dates = get_eom_dates(dt.datetime.today() - relativedelta(years=15), dt.datetime.today(), 'bus')
+dates = get_eom_dates(dt.today() - relativedelta(years=1), dt.today(), 'bus')
 
 # Create a dictionary to store the data
 data = {}
@@ -35,6 +34,10 @@ for curve in curves:
         curve_id = curve
         resp = LocalTerminal.get_reference_data(curve_id, 'CURVE_TENOR_RATES', CURVE_DATE=date.strftime('%Y%m%d'))
         df = resp.as_frame()
+        tenors = df['CURVE_TENOR_RATES'].iloc[0]['Tenor'].to_list()
+        rates = df['CURVE_TENOR_RATES'].iloc[0]['Mid Yield'].to_list()
+        df = pd.DataFrame({'Term': tenors, 'Rate': rates})
+        print(df)
         # Store the data in the dictionary with keys as (curve, date)
         data[(curve, date)] = df
 
