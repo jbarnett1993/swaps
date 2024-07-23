@@ -33,6 +33,8 @@ df_eur['monthly_return'] = df_eur['pnl_bps']
 df_gbp['monthly_return'] = df_gbp['pnl_bps']
 df_usd['monthly_return'] = df_usd['pnl_bps']
 
+df_eur.to_csv('df_eur.csv')
+
 # Assume risk-free rate is 0 for simplicity
 risk_free_rate = 0.0
 
