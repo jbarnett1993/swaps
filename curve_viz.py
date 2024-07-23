@@ -24,7 +24,7 @@ def get_eom_dates(start_date, end_date, calendar):
         current_date = eom_date
     return dates
 
-dates = get_eom_dates(dt.datetime.today() - relativedelta(years=1), dt.datetime.today(), 'bus')
+dates = get_eom_dates(dt.today() - relativedelta(years=1), dt.today(), 'bus')
 
 # Function to batch requests
 def batch_requests(curves, dates, batch_size=10):
@@ -51,12 +51,3 @@ for curve, date in batch_requests(curves, dates, batch_size=5):
     # Store the data in the dictionary with keys as (curve, date)
     data[(curve, date)] = df
 
-# Convert the dictionary to a multi-index DataFrame for better usability
-multi_index_df = pd.concat(data.values(), keys=data.keys())
-
-# Reset index to have a flat DataFrame if needed
-multi_index_df = multi_index_df.reset_index(level=0, drop=True).reset_index()
-multi_index_df.columns = ['Curve', 'Date'] + list(multi_index_df.columns[2:])
-
-# Display the resulting DataFrame
-print(multi_index_df)
