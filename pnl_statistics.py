@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 # Load the data
-df = pd.read_csv('eur_gbp_usd_swaps_strat.csv')
+df = pd.read_csv('master_txs.csv')
 df.sort_values(by='close_date', inplace=True)
 
 # Filter out rows with NaN in 'pnl'
@@ -28,18 +28,7 @@ df_gbp['cumulative_pnl_bps'] = df_gbp['pnl_bps'].cumsum()
 df_usd['cumulative_pnl_bps'] = df_usd['pnl_bps'].cumsum()
 
 # Plotting
-with PdfPages('cumulative_pnl_bps.pdf') as pdf:
-    # # Combined cumulative PnL in basis points
-    # plt.figure(figsize=(10, 6))
-    # plt.plot(df['close_date'], df['cumulative_pnl_bps'], label='Combined')
-    # plt.title('Cumulative PnL in Basis Points - Combined')
-    # plt.xlabel('Close Date')
-    # plt.ylabel('Cumulative PnL (bps)')
-    # plt.legend()
-    # plt.grid(True)
-    # pdf.savefig()
-    # plt.close()
-
+with PdfPages('master_pnl_stats.pdf') as pdf:
     # EUR cumulative PnL in basis points
     plt.figure(figsize=(10, 6))
     plt.plot(df_eur['close_date'], df_eur['cumulative_pnl_bps'], label='EUR', color='blue')
