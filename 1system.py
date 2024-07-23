@@ -9,7 +9,7 @@ sids = {'eur': 514, 'gbp': 141, 'usd': 490}
 all_tenors = list(range(1, 31))
 
 class SwapCreator():
-    def __init__(self, ccy, date=dt.datetime.today()):
+    def __init__(self, ccy, date=dt.today()):
         self.ccy = ccy
         self.curvenum = sids.get(ccy)
         self.date = date
@@ -156,10 +156,10 @@ def rebalance_swaps(start_date, end_date):
 
     return all_positions
 
-start_date = dt.datetime.today() - relativedelta(years=1)
-end_date = dt.datetime.today()
+start_date = dt.today() - relativedelta(years=15)
+end_date = dt.today()
 positions = rebalance_swaps(start_date, end_date)
 
 # Convert positions to DataFrame and save to CSV
 positions_df = pd.DataFrame(positions)
-positions_df.to_csv('pnl_test.csv', index=False)
+positions_df.to_csv('master_txs.csv', index=False)
