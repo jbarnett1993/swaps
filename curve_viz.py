@@ -25,9 +25,25 @@ def get_eom_dates(start_date, end_date, calendar):
         current_date = eom_date
     return dates
 
-dates = get_eom_dates(dt.today() - relativedelta(years=15), dt.today(), 'bus')
+dates = get_eom_dates(dt.datetime.today() - relativedelta(years=15), dt.datetime.today(), 'bus')
 
-#ADJUST THIS CODE SO THAT IT LOOPS OVER ALL THE CURVES AND DATES
-resp = LocalTerminal.get_reference_data(curve_id, 'CURVE_TENOR_RATES', CURVE_DATE=self.date.strftime('%Y%m%d'))
-df = resp.as_frame()
+# Create a dictionary to store the data
+data = {}
 
+for curve in curves:
+    for date in dates:
+        curve_id = curve
+        resp = LocalTerminal.get_reference_data(curve_id, 'CURVE_TENOR_RATES', CURVE_DATE=date.strftime('%Y%m%d'))
+        df = resp.as_frame()
+        # Store the data in the dictionary with keys as (curve, date)
+        data[(curve, date)] = df
+
+# Convert the dictionary to a multi-index DataFrame for better usability
+multi_index_df = pd.concat(data.values(), keys=data.keys())
+
+# Reset index to have a flat DataFrame if needed
+multi_index_df = multi_index_df.reset_index(level=0, drop=True).reset_index()
+multi_index_df.columns = ['Curve', 'Date'] + list(multi_index_df.columns[2:])
+
+# Display the resulting DataFrame
+print(multi_index_df)
