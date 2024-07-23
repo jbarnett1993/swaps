@@ -128,7 +128,8 @@ def rebalance_swaps(start_date, end_date):
                     'term': swap['term'],
                     'rate': swap['rate'],
                     'direction': -1,  # Receive
-                    'pnl': None,
+                    'exit rate': closing_rate,
+                    'pnl': pnl,
                     'close_date': add_tenor(date, "1M", "F", calendar, 1),
                 })
 
@@ -139,7 +140,8 @@ def rebalance_swaps(start_date, end_date):
                     'term': swap['term'],
                     'rate': swap['rate'],
                     'direction': 1,  # Pay
-                    'pnl': None,
+                    'exit rate': closing_rate,
+                    'pnl': pnl,
                     'close_date': add_tenor(date, "1M", "F", calendar, 1),
                 })
 
@@ -153,12 +155,12 @@ def rebalance_swaps(start_date, end_date):
 
     return all_positions
 
-start_date = dt.today() - relativedelta(years=15)
+start_date = dt.today() - relativedelta(years=1)
 end_date = dt.today()
 positions = rebalance_swaps(start_date, end_date)
 
 # Convert positions to DataFrame and save to CSV
 positions_df = pd.DataFrame(positions)
-positions_df.to_csv('eur_gbp_usd_swaps_strat', index=False)
+positions_df.to_csv('pnl_test.csv', index=False)
 
 

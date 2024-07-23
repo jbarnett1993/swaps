@@ -29,16 +29,16 @@ df_usd['cumulative_pnl_bps'] = df_usd['pnl_bps'].cumsum()
 
 # Plotting
 with PdfPages('cumulative_pnl_bps.pdf') as pdf:
-    # Combined cumulative PnL in basis points
-    plt.figure(figsize=(10, 6))
-    plt.plot(df['close_date'], df['cumulative_pnl_bps'], label='Combined')
-    plt.title('Cumulative PnL in Basis Points - Combined')
-    plt.xlabel('Close Date')
-    plt.ylabel('Cumulative PnL (bps)')
-    plt.legend()
-    plt.grid(True)
-    pdf.savefig()
-    plt.close()
+    # # Combined cumulative PnL in basis points
+    # plt.figure(figsize=(10, 6))
+    # plt.plot(df['close_date'], df['cumulative_pnl_bps'], label='Combined')
+    # plt.title('Cumulative PnL in Basis Points - Combined')
+    # plt.xlabel('Close Date')
+    # plt.ylabel('Cumulative PnL (bps)')
+    # plt.legend()
+    # plt.grid(True)
+    # pdf.savefig()
+    # plt.close()
 
     # EUR cumulative PnL in basis points
     plt.figure(figsize=(10, 6))
