@@ -1,8 +1,11 @@
 import pandas as pd
 import datetime as dt
-from rateslib import *
+from rateslib import add_tenor
 from tia.bbg import LocalTerminal
 from dateutil.relativedelta import relativedelta
+import plotly.graph_objs as go
+import plotly.express as px
+import plotly.io as pio
 
 sids = {'eur': 514, 'gbp': 141, 'usd': 490}
 
@@ -24,7 +27,7 @@ def get_eom_dates(start_date, end_date, calendar):
         current_date = eom_date
     return dates
 
-dates = get_eom_dates(dt.today() - relativedelta(years=1), dt.today(), 'bus')
+dates = get_eom_dates(dt.datetime.today() - relativedelta(years=1), dt.datetime.today(), 'bus')
 
 # Function to batch requests
 def batch_requests(curves, dates, batch_size=10):
@@ -51,3 +54,43 @@ for curve, date in batch_requests(curves, dates, batch_size=5):
     # Store the data in the dictionary with keys as (curve, date)
     data[(curve, date)] = df
 
+# Plotting with Plotly
+def create_interactive_chart(data, curves):
+    fig = go.Figure()
+
+    for curve in curves:
+        curve_data = [(date, df) for (c, date), df in data.items() if c == curve]
+        curve_data.sort(key=lambda x: x[0])
+        for date, df in curve_data:
+            fig.add_trace(go.Scatter(x=df['Term'], y=df['Rate'], mode='lines', name=f'{curve} - {date.strftime("%Y-%m-%d")}', visible=False))
+
+    fig.data[0].visible = True  # Show the first curve initially
+
+    # Create a slider for date selection
+    steps = []
+    for i in range(len(fig.data)):
+        step = dict(
+            method="update",
+            args=[{"visible": [False] * len(fig.data)},
+                  {"title": f"Curve Data for {curves[i % len(curves)]}"}],
+        )
+        step["args"][0]["visible"][i] = True  # Toggle i-th trace to be visible
+        steps.append(step)
+
+    sliders = [dict(
+        active=0,
+        currentvalue={"prefix": "Date: "},
+        pad={"t": 50},
+        steps=steps
+    )]
+
+    fig.update_layout(
+        sliders=sliders,
+        title="Yield Curves",
+        xaxis_title="Term",
+        yaxis_title="Rate"
+    )
+
+    fig.show()
+
+create_interactive_chart(data, curves)
