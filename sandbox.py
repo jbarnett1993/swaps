@@ -1,31 +1,33 @@
-import pandas as pd
-import numpy as np
+'''
+close_date	cumulative	pct ret
+01/09/2009	51.68366665	0.516836666
+01/10/2009	56.18448305	0.561844831
+02/11/2009	-22.31042853	-0.223104285
+01/12/2009	42.37183348	0.423718335
+04/01/2010	22.22397196	0.22223972
+01/02/2010	54.08109508	0.540810951
+01/03/2010	117.5450341	1.175450341
+01/04/2010	-7.099914041	-0.07099914
+03/05/2010	29.69631399	0.29696314
+01/06/2010	-5.748320618	-0.057483206
+01/07/2010	44.15770367	0.441577037
+02/08/2010	-18.25306326	-0.182530633
+01/09/2010	-30.96701232	-0.309670123
+01/10/2010	-9.242151504	-0.092421515
+01/11/2010	1.885742757	0.018857428
+01/12/2010	20.1011989	0.201011989
+03/01/2011	32.23704721	0.322370472
+01/02/2011	-138.4681709	-1.384681709
+01/03/2011	-22.07243238	-0.220724324
+01/04/2011	-30.45690026	-0.304569003
+02/05/2011	-4.728538481	-0.047285385
+01/06/2011	86.72929182	0.867292918
+01/07/2011	34.22873805	0.342287381
+01/08/2011	117.9970921	1.179970921
+01/09/2011	15.24653909	0.152465391
 
-# Assuming your data is in a CSV or you have it in a DataFrame named `df`
-data = {
-    'close_date': ['2009-09-01', '2009-10-01', '2009-11-02', '2009-12-01', '2010-01-04', 
-                   '2024-03-01', '2024-04-02', '2024-05-01', '2024-06-03', '2024-07-01'],
-    'pnl': [76.042377, 53.616778, 23.193911, 112.948106, 26.140612, 
-            141.734303, -41.933632, 81.131266, -1.410652, -49.101956]
-}
-df = pd.DataFrame(data)
-df['close_date'] = pd.to_datetime(df['close_date'])
-df.set_index('close_date', inplace=True)
 
-# Convert PnL from basis points to decimal form
-returns = df['pnl'] / 10000
 
-# Parameters
-risk_free_rate = 0.01 / 100  # Example risk-free rate in decimal form (e.g., 1% annualized)
-benchmark_return = returns.mean()  # Example benchmark return
 
-# Sharpe Ratio
-excess_return = returns - risk_free_rate
-sharpe_ratio = excess_return.mean() / excess_return.std()
 
-# Information Ratio
-active_return = returns - benchmark_return
-information_ratio = active_return.mean() / active_return.std()
-
-print(f"Sharpe Ratio: {sharpe_ratio}")
-print(f"Information Ratio: {information_ratio}")
+'''

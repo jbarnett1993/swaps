@@ -25,16 +25,17 @@ df_gbp = df[df['ccy'] == 'gbp'].copy()
 df_usd = df[df['ccy'] == 'usd'].copy()
 
 # Calculate monthly returns
-monthly_rets_eur = df_eur.groupby('close_date').sum('pnl_bps')['pnl_bps']
-monthly_rets_gbp = df_gbp.groupby('close_date').sum('pnl_bps')['pnl_bps']
-monthly_rets_usd = df_usd.groupby('close_date').sum('pnl_bps')['pnl_bps']
+monthly_rets_eur = df_eur.groupby('close_date').sum('pnl_bps')['pnl_bps'] / 100
+monthly_rets_gbp = df_gbp.groupby('close_date').sum('pnl_bps')['pnl_bps'] / 100 
+monthly_rets_usd = df_usd.groupby('close_date').sum('pnl_bps')['pnl_bps'] / 100
 
 print(monthly_rets_eur)
 print(monthly_rets_gbp)
 print(monthly_rets_usd)
 
 # Assume risk-free rate is 0 for simplicity
-risk_free_rate = 0.0
+risk_free_rate = 0.05
+risk_free_rate = (1+risk_free_rate) ** (1/12) -1 
 
 # Calculate Sharpe Ratio for monthly data
 def calculate_sharpe_ratio(returns, risk_free_rate=0.0):
@@ -44,6 +45,12 @@ def calculate_sharpe_ratio(returns, risk_free_rate=0.0):
 sharpe_eur = calculate_sharpe_ratio(monthly_rets_eur)
 sharpe_gbp = calculate_sharpe_ratio(monthly_rets_gbp)
 sharpe_usd = calculate_sharpe_ratio(monthly_rets_usd)
+
+print(sharpe_eur)
+print(sharpe_gbp)
+print(sharpe_gbp)
+
+exit()
 
 # Calculate Information Ratio for monthly data
 def calculate_information_ratio(returns, benchmark_returns):
