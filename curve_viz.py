@@ -4,7 +4,6 @@ from rateslib import add_tenor
 from tia.bbg import LocalTerminal
 from dateutil.relativedelta import relativedelta
 import plotly.graph_objs as go
-import plotly.express as px
 import plotly.io as pio
 
 sids = {'eur': 514, 'gbp': 141, 'usd': 490}
@@ -91,6 +90,9 @@ def create_interactive_chart(data, curves):
         yaxis_title="Rate"
     )
 
-    fig.show()
+    # Save the plot as an HTML file
+    pio.write_html(fig, 'yield_curves.html')
+
+    print("Interactive chart saved as 'yield_curves.html'.")
 
 create_interactive_chart(data, curves)
