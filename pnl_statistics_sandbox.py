@@ -35,8 +35,6 @@ monthly_pnl_eur, monthly_returns_eur = calculate_monthly_returns(df_eur)
 monthly_pnl_gbp, monthly_returns_gbp = calculate_monthly_returns(df_gbp)
 monthly_pnl_usd, monthly_returns_usd = calculate_monthly_returns(df_usd)
 
-df_eur.to_csv('df_eur.csv')
-
 # Assume risk-free rate is 0 for simplicity
 risk_free_rate = 0.0
 
