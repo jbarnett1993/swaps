@@ -28,7 +28,7 @@ df_usd = df[df['ccy'] == 'usd'].copy()
 def calculate_monthly_returns(df):
     df.set_index('close_date', inplace=True)
     monthly_pnl = df['pnl_bps'].resample('M').sum()
-    monthly_returns = monthly_pnl.pct_change().dropna()
+    monthly_returns = monthly_pnl / 100
     return monthly_pnl, monthly_returns
 
 monthly_pnl_eur, monthly_returns_eur = calculate_monthly_returns(df_eur)
