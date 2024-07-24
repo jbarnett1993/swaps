@@ -24,7 +24,7 @@ def get_eom_dates(start_date, end_date, calendar):
         current_date = eom_date
     return dates
 
-dates = get_eom_dates(dt.datetime.today() - relativedelta(years=15), dt.datetime.today(), 'bus')
+dates = get_eom_dates(dt.datetime.today() - relativedelta(years=1), dt.datetime.today(), 'bus')
 
 # Function to batch requests
 def batch_requests(curves, dates, batch_size=10):
@@ -51,8 +51,14 @@ for curve, date in batch_requests(curves, dates, batch_size=5):
     # Store the data in the dictionary with keys as (curve, date)
     data[(curve, date)] = df
 
+# Calculate global min and max rates for each currency
+y_axis_limits = {}
+for curve, currency in curves.items():
+    rates = [rate for (c, _), df in data.items() if c == curve for rate in df['Rate']]
+    y_axis_limits[currency] = (min(rates), max(rates))
+
 # Plotting with Plotly
-def create_interactive_chart(data, curve, currency):
+def create_interactive_chart(data, curve, currency, y_axis_range):
     fig = go.Figure()
 
     curve_data = [(date, df) for (c, date), df in data.items() if c == curve]
@@ -84,14 +90,15 @@ def create_interactive_chart(data, curve, currency):
         sliders=sliders,
         title=f"Yield Curves for {currency}",
         xaxis_title="Term",
-        yaxis_title="Rate"
+        yaxis_title="Rate",
+        yaxis=dict(range=y_axis_range)  # Set the y-axis range
     )
 
     # Save the plot as an HTML file
-    file_name = f'yield_curves_{currency}.html'
-    pio.write_html(fig, file_name)
+    file_name_html = f'yield_curves_{currency}.html'
+    pio.write_html(fig, file_name_html)
 
-    print(f"Interactive chart saved as '{file_name}'.")
+    print(f"Interactive chart saved as '{file_name_html}'.")
 
 for curve, currency in curves.items():
-    create_interactive_chart(data, curve, currency)
+    create_interactive_chart(data, curve, currency, y_axis_limits[currency])
