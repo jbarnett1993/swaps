@@ -1,23 +1,11 @@
-I have this code below. I’d like to make some changes specifically to the rebalance swaps function.
-What I’d like to do is to is, within each of the lines below
-        eom_date = add_tenor(current_date, "1M", "F", 'ldn', 1)
-        'close_date': add_tenor(date, "1M", "F", 'ldn', 1),
-        'close_date': add_tenor(date, "1M", "F", 'ldn', 1),
-
-Instead of specifying the calendar manually, I would like to dynamically set the calendar in the same way that I do within the ‘price_swaps’ function using
-defaults.spec[str(self.ccy + '_irs')]['calendar'])
-could you do that for me? 
-
 import pandas as pd
 import datetime as dt
 from rateslib import *
 from tia.bbg import LocalTerminal
 from dateutil.relativedelta import relativedelta
 
-sids = {'gbp': 141}
-# sids = {'eur': 514, 'usd': 490, 'gbp': 141, 'chf': 234, 'sek': 185, 'nok':487}
-print(list(sids.keys())[0])
-# exit()
+sids = {'eur': 514, 'gbp': 141, 'usd': 490}
+# sids = {'eur': 514, 'usd': 490, 'gbp': 141, 'chf': 234, 'sek': 185, 'nok': 487}
 all_tenors = list(range(1, 31))
 
 class SwapCreator():
@@ -92,11 +80,11 @@ class SwapCreator():
 
         return swaps_df
 
-def get_eom_dates(start_date, end_date):
+def get_eom_dates(start_date, end_date, calendar):
     dates = []
     current_date = start_date
     while current_date <= end_date:
-        eom_date = add_tenor(current_date, "1M", "F", 'ldn', 1)
+        eom_date = add_tenor(current_date, "1M", "F", calendar, 1)
         if eom_date > end_date:
             break
         dates.append(eom_date)
@@ -104,19 +92,22 @@ def get_eom_dates(start_date, end_date):
     return dates
 
 def rebalance_swaps(start_date, end_date):
-    eom_dates = get_eom_dates(start_date, end_date)
-    positions = []
+    all_positions = []
 
-    for date in eom_dates:
-        swap_creator = SwapCreator(f'{list(sids.keys())[0]}', date)
-        swaps_df = swap_creator.price_swaps()
-        swaps_df['date'] = date
+    for ccy in sids.keys():
+        calendar = defaults.spec[str(ccy + '_irs')]['calendar']
+        eom_dates = get_eom_dates(start_date, end_date, calendar)
+        positions = []
 
-        receive_swaps = swaps_df.head(3)
-        pay_swaps = swaps_df.tail(3)
+        for date in eom_dates:
+            swap_creator = SwapCreator(ccy, date)
+            swaps_df = swap_creator.price_swaps()
+            swaps_df['date'] = date
 
-        # Close out previous month's positions
-        if positions:
+            receive_swaps = swaps_df.head(4)
+            pay_swaps = swaps_df.tail(4)
+
+            # Close out previous month's positions
             for position in positions:
                 if position['close_date'] == date:
                     entry_rate = position['rate']
@@ -125,47 +116,50 @@ def rebalance_swaps(start_date, end_date):
                         closing_rate = closing_swap['rolled_rate'].values[0]
                         pnl = (closing_rate - entry_rate) * position['direction'] * 100 * 5000
                         position['pnl'] = pnl
+                        position['exit_rate'] = closing_rate
                     else:
                         position['pnl'] = None
+                        position['exit_rate'] = None
 
-        # Add new positions
-        for _, swap in receive_swaps.iterrows():
-            # new_term = f"{int(swap['term'].split('Y')[0]) - 1}Y{swap['term'].split('Y')[1]}"
-            positions.append({
-                'date': date,
-                'term': swap['term'],
-                'rate': swap['rate'],
-                'direction': -1,  # Receive
-                'pnl': None,
-                'close_date': add_tenor(date, "1M", "F", 'ldn', 1),
-                # 'new_term': new_term
-            })
+            # Add new positions
+            for _, swap in receive_swaps.iterrows():
+                positions.append({
+                    'date': date,
+                    'ccy': ccy,
+                    'term': swap['term'],
+                    'rate': swap['rate'],
+                    'direction': -1,  # Receive
+                    'exit_rate': None,  # Initialize with None
+                    'pnl': None,  # Initialize with None
+                    'close_date': add_tenor(date, "1M", "F", calendar, 1),
+                })
 
-        for _, swap in pay_swaps.iterrows():
-            # new_term = f"{int(swap['term'].split('Y')[0]) - 1}Y{swap['term'].split('Y')[1]}"
-            positions.append({
-                'date': date,
-                'term': swap['term'],
-                'rate': swap['rate'],
-                'direction': 1,  # Pay
-                'pnl': None,
-                'close_date': add_tenor(date, "1M", "F", 'ldn', 1),
-                # 'new_term': new_term
-            })
+            for _, swap in pay_swaps.iterrows():
+                positions.append({
+                    'date': date,
+                    'ccy': ccy,
+                    'term': swap['term'],
+                    'rate': swap['rate'],
+                    'direction': 1,  # Pay
+                    'exit_rate': None,  # Initialize with None
+                    'pnl': None,  # Initialize with None
+                    'close_date': add_tenor(date, "1M", "F", calendar, 1),
+                })
 
-        # Print positions for the month
-        print(f"Positions for {date}")
-        for position in positions:
-            if position['date'] == date:
-                print(position)
+            # Print positions for the month
+            print(f"Positions for {ccy} on {date}")
+            for position in positions:
+                if position['date'] == date:
+                    print(position)
 
-    return positions
+        all_positions.extend(positions)
 
-start_date = dt.today() - relativedelta(years=5)
+    return all_positions
 
-end_date = dt.today() 
+start_date = dt.today() - relativedelta(years=15)
+end_date = dt.today()
 positions = rebalance_swaps(start_date, end_date)
 
 # Convert positions to DataFrame and save to CSV
 positions_df = pd.DataFrame(positions)
-positions_df.to_csv(f'{list(sids.keys())[0]}_swap_strat_pnl.csv', index=False)
+positions_df.to_csv('last4years_txs.csv', index=False)

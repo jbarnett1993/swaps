@@ -24,7 +24,7 @@ def get_eom_dates(start_date, end_date, calendar):
         current_date = eom_date
     return dates
 
-dates = get_eom_dates(dt.datetime.today() - relativedelta(years=1), dt.datetime.today(), 'bus')
+dates = get_eom_dates(dt.datetime.today() - relativedelta(years=15), dt.datetime.today(), 'bus')
 
 # Function to batch requests
 def batch_requests(curves, dates, batch_size=10):

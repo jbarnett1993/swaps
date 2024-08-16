@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 # Load the data
-df = pd.read_csv('rec4pay4_txs.csv')
+df = pd.read_csv('master_txs.csv')
 df.sort_values(by='close_date', inplace=True)
 
 # Filter out rows with NaN in 'pnl'
@@ -55,7 +55,7 @@ print(f'Information Ratio (GBP): {info_ratio_gbp}')
 print(f'Information Ratio (USD): {info_ratio_usd}')
 
 # Plotting
-with PdfPages('last4years.pdf') as pdf:
+with PdfPages('test.pdf') as pdf:
     # EUR cumulative PnL in basis points
     plt.figure(figsize=(10, 6))
     plt.plot(monthly_rets_eur.index, monthly_rets_eur.cumsum(), label='EUR', color='blue')
@@ -70,7 +70,7 @@ with PdfPages('last4years.pdf') as pdf:
     # GBP cumulative PnL in basis points
     plt.figure(figsize=(10, 6))
     plt.plot(monthly_rets_gbp.index, monthly_rets_gbp.cumsum(), label='GBP', color='green')
-    plt.title(f'Cumulative PnL - GBP\n Information Ratio: {info_ratio_gbp:.3f}')
+    plt.title(f'Cumulative PnL GBP\n Information Ratio: {info_ratio_gbp:.3f}')
     plt.xlabel('Close Date')
     plt.ylabel('Cumulative PnL (%)')
     plt.legend()
@@ -81,7 +81,7 @@ with PdfPages('last4years.pdf') as pdf:
     # USD cumulative PnL in basis points
     plt.figure(figsize=(10, 6))
     plt.plot(monthly_rets_usd.index, monthly_rets_usd.cumsum(), label='USD', color='red')
-    plt.title(f'Cumulative PnL - USD\n Information Ratio: {info_ratio_usd:.3f}')
+    plt.title(f'Cumulative PnL USD\n Information Ratio: {info_ratio_usd:.3f}')
     plt.xlabel('Close Date')
     plt.ylabel('Cumulative PnL (bps)')
     plt.legend()
