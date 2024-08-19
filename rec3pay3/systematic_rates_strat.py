@@ -160,6 +160,5 @@ start_date = dt.today() - relativedelta(years=15)
 end_date = dt.today()
 positions = rebalance_swaps(start_date, end_date)
 
-# Convert positions to DataFrame and save to CSV
 positions_df = pd.DataFrame(positions)
 positions_df.to_csv('rec3pay3_txs', index=False)
