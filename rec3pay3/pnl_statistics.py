@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 # Load the data
-df = pd.read_csv('master_txs.csv')
+df = pd.read_csv('rec3pay3_txs.csv')
 df.sort_values(by='close_date', inplace=True)
+input(df)
 
 # Filter out rows with NaN in 'pnl'
 df = df.dropna(subset=['pnl'])

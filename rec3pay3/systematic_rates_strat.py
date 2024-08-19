@@ -104,8 +104,8 @@ def rebalance_swaps(start_date, end_date):
             swaps_df = swap_creator.price_swaps()
             swaps_df['date'] = date
 
-            receive_swaps = swaps_df.head(4)
-            pay_swaps = swaps_df.tail(4)
+            receive_swaps = swaps_df.head(3)
+            pay_swaps = swaps_df.tail(3)
 
             # Close out previous month's positions
             for position in positions:
@@ -162,4 +162,4 @@ positions = rebalance_swaps(start_date, end_date)
 
 # Convert positions to DataFrame and save to CSV
 positions_df = pd.DataFrame(positions)
-positions_df.to_csv('last4years_txs.csv', index=False)
+positions_df.to_csv('rec3pay3_txs', index=False)
